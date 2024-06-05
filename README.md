@@ -21,4 +21,4 @@ Este repositório contém um jogo de blackjack implementado em C. O jogo permite
 Compile o jogo com um compilador C. Por exemplo:
 
 ```bash
-gcc -o blackjack blackjack.c
+gcc -o blackjack main.c
