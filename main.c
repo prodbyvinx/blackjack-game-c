@@ -151,6 +151,52 @@ int compararPontuacao(const void *a, const void *b) {
     return diferencaA - diferencaB;
 }
 
+void determinarVencedor(Jogador jogador[], int qtdjogador) {
+    // Ordenar jogadores pela pontuação
+    qsort(jogador, qtdjogador, sizeof(Jogador), compararPontuacao);
+
+    // Exibir resultados
+    printf("Resultado final:\n");
+    for (int i = 0; i < qtdjogador; i++) {
+        if (!jogador[i].eliminado) {
+            printf("%d. %s (Pontuação: %d)\n", i + 1, jogador[i].nome,
+                   jogador[i].pontuacao);
+            for (int j = 0; j < jogador[i].numCartas; j++) {
+                imprimirCarta(jogador[i].mao[j]);
+            }
+            printf("\n");
+        } else {
+            printf("%s foi eliminado!\n", jogador[i].nome);
+        }
+    }
+
+    // Determinar o vencedor
+    if (jogador[0].pontuacao != -1) { // Se o jogador com maior pontuação não foi eliminado
+        if (jogador[0].pontuacao == jogador[1].pontuacao) { // Empate na pontuação mais alta
+            if (strcmp(jogador[0].nome, "CPU") == 0 || strcmp(jogador[1].nome, "CPU") == 0) {
+                printf("A CPU venceu o jogo com pontuação %d!\n", jogador[0].pontuacao);
+            } else {
+                printf("O jogo terminou em empate entre %s e %s com pontuação %d!\n",
+                       jogador[0].nome, jogador[1].nome, jogador[0].pontuacao);
+            }
+        } else { // Não há empate
+            if (strcmp(jogador[0].nome, "CPU") == 0 && jogador[1].pontuacao != -1) {
+                // CPU não deve vencer se há um humano não eliminado com pontuação menor
+                printf("O vencedor é %s com pontuação %d!\n", jogador[1].nome,
+                       jogador[1].pontuacao);
+            } else if (strcmp(jogador[1].nome, "CPU") == 0 && jogador[0].pontuacao != -1) {
+                printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
+                       jogador[0].pontuacao);
+            } else {
+                printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
+                       jogador[0].pontuacao);
+            }
+        }
+    } else { // Todos os jogadores humanos foram eliminados
+        printf("Todos os jogadores humanos foram eliminados. A CPU venceu o jogo!\n");
+    }
+}
+
 int main() {
     Baralho baralho;
     int qtdjogador = 0;
@@ -200,53 +246,10 @@ int main() {
     while (qtdjogador > 1 && jogador[qtdjogador - 1].pontuacao <= 16) {
         pegarNovaCarta(&baralho, &jogador[qtdjogador - 1], &cartaAtual);
     }
-
+    
     imprimirMaos(jogador, qtdjogador);
-
-    // Ordenar jogadores pela pontuação
-    qsort(jogador, qtdjogador, sizeof(Jogador), compararPontuacao);
-
-    // Exibir resultados
-    printf("Resultado final:\n");
-    for (int i = 0; i < qtdjogador; i++) {
-        if (jogador[i].pontuacao == -1) {
-            printf("%s foi eliminado!\n", jogador[i].nome);
-        } else {
-            printf("%d. %s (Pontuação: %d)\n", i + 1, jogador[i].nome,
-                   jogador[i].pontuacao);
-            for (int j = 0; j < jogador[i].numCartas; j++) {
-                imprimirCarta(jogador[i].mao[j]);
-            }
-        }
-        printf("\n");
-    }
-
-    // Determinar o vencedor
-    if (jogador[0].pontuacao != -1) { // Se o jogador com maior pontuação não foi eliminado
-        if (jogador[0].pontuacao == jogador[1].pontuacao) { // Empate na pontuação mais alta
-            if (strcmp(jogador[0].nome, "CPU") == 0 || strcmp(jogador[1].nome, "CPU") == 0) {
-                printf("A CPU venceu o jogo com pontuação %d!\n", jogador[0].pontuacao);
-            } else {
-                printf("O jogo terminou em empate entre %s e %s com pontuação %d!\n",
-                       jogador[0].nome, jogador[1].nome, jogador[0].pontuacao);
-            }
-        } else { // Não há empate
-            if (strcmp(jogador[0].nome, "CPU") == 0 && jogador[1].pontuacao != -1) {
-                // CPU não deve vencer se há um humano não eliminado com pontuação menor
-                printf("O vencedor é %s com pontuação %d!\n", jogador[1].nome,
-                       jogador[1].pontuacao);
-            } else if (strcmp(jogador[1].nome, "CPU") == 0 && jogador[0].pontuacao != -1) {
-                printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
-                       jogador[0].pontuacao);
-            } else {
-                printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
-                       jogador[0].pontuacao);
-            }
-        }
-    } else { // Todos os jogadores humanos foram eliminados
-        printf("Todos os jogadores humanos foram eliminados. A CPU venceu o jogo!\n");
-    }
-
+    determinarVencedor();
+    
     // Exibir mensagem para pressionar qualquer tecla para fechar o programa
     printf("Pressione qualquer tecla para fechar o programa...\n");
     getchar(); // Espera o usuário pressionar qualquer tecla
