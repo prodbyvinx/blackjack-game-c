@@ -248,7 +248,7 @@ int main() {
     }
     
     imprimirMaos(jogador, qtdjogador);
-    determinarVencedor();
+    determinarVencedor(jogador, qtdjogador);
     
     // Exibir mensagem para pressionar qualquer tecla para fechar o programa
     printf("Pressione qualquer tecla para fechar o programa...\n");
