@@ -197,7 +197,7 @@ int main() {
     }
 
     // Lógica para CPU pegar novas cartas
-    while (qtdjogador > 1 && jogador[qtdjogador - 1].pontuacao < 17) {
+    while (qtdjogador > 1 && jogador[qtdjogador - 1].pontuacao <= 16) {
         pegarNovaCarta(&baralho, &jogador[qtdjogador - 1], &cartaAtual);
     }
 
