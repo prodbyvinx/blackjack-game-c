@@ -4,7 +4,7 @@ Este repositório contém um jogo de blackjack implementado em C. O jogo permite
 
 ## Funcionalidades
 
-- Jogo de blackjack simples para até 12 jogadores.
+- Jogo de blackjack simples para até 13 jogadores.
 - Jogadores humanos podem interagir para pedir novas cartas.
 - A CPU joga automaticamente segundo uma estratégia pré-definida.
 - O jogo termina quando um jogador ou a CPU atingem 21 pontos ou todos os humanos são eliminados.
