@@ -6,11 +6,10 @@
 // Limpa o buffer do teclado
 void limpaBuffer() {
   int ch;
-  while ((ch = fgetc(stdin)) != EOF && ch != '\n') {
-  }
+  while ((ch = getchar()) != '\n' && ch != EOF)
+    ;
 }
 
-// Tipos enumerados para representar os naipes e os valores das cartas
 typedef enum { PAUS, OUROS, COPAS, ESPADAS } Naipe;
 
 typedef enum {
@@ -29,27 +28,23 @@ typedef enum {
   REI
 } Valor;
 
-// Estrutura que representa uma carta
 typedef struct {
   Naipe naipe;
   Valor valor;
 } Carta;
 
-// Estrutura que representa o baralho
 typedef struct {
   Carta cartas[52];
 } Baralho;
 
-// Estrutura que representa um jogador
 typedef struct {
   char nome[20];
-  Carta mao[5];  // Mão do jogador (pode ter no máximo 5 cartas)
-  int pontuacao; // Pontuação total das cartas na mão do jogador
-  int numCartas; // Número de cartas na mão do jogador
-  int eliminado; // Indica se o jogador foi eliminado (1) ou não (0)
+  Carta mao[5];
+  int pontuacao;
+  int numCartas;
+  int eliminado;
 } Jogador;
 
-// Inicializa o baralho com todas as cartas
 void inicializarBaralho(Baralho *baralho) {
   int index = 0;
   for (int n = PAUS; n <= ESPADAS; n++) {
@@ -61,7 +56,6 @@ void inicializarBaralho(Baralho *baralho) {
   }
 }
 
-// Embaralha o baralho
 void embaralharBaralho(Baralho *baralho) {
   srand(time(NULL));
   for (int i = 51; i > 0; i--) {
@@ -72,7 +66,6 @@ void embaralharBaralho(Baralho *baralho) {
   }
 }
 
-// Imprime uma carta
 void imprimirCarta(Carta carta) {
   const char *valores[] = {"",      "Ás",     "Dois", "Três", "Quatro",
                            "Cinco", "Seis",   "Sete", "Oito", "Nove",
@@ -82,14 +75,12 @@ void imprimirCarta(Carta carta) {
   printf("%s de %s\n", valores[carta.valor], naipes[carta.naipe]);
 }
 
-// Imprime todo o baralho (para fins de debug)
 void imprimirBaralho(Baralho baralho) {
   for (int i = 0; i < 52; i++) {
     imprimirCarta(baralho.cartas[i]);
   }
 }
 
-// Calcula a pontuação total da mão de um jogador
 int calcularPontuacao(Jogador *jogador) {
   int soma = 0;
   for (int i = 0; i < jogador->numCartas; i++) {
@@ -102,7 +93,6 @@ int calcularPontuacao(Jogador *jogador) {
   return soma;
 }
 
-// Distribui cartas para todos os jogadores
 void distribuirCartas(Baralho *baralho, Jogador jogador[], int qtdjogador,
                       int *cartaAtual) {
   for (int i = 0; i < qtdjogador; i++) {
@@ -114,7 +104,6 @@ void distribuirCartas(Baralho *baralho, Jogador jogador[], int qtdjogador,
   }
 }
 
-// Imprime a mão de todos os jogadores
 void imprimirMaos(Jogador jogador[], int qtdjogador) {
   for (int i = 0; i < qtdjogador; i++) {
     printf("Mão do jogador %s (Pontuação: %d):\n", jogador[i].nome,
@@ -126,9 +115,8 @@ void imprimirMaos(Jogador jogador[], int qtdjogador) {
   }
 }
 
-// Jogador pede uma nova carta
 void pegarNovaCarta(Baralho *baralho, Jogador *jogador, int *cartaAtual) {
-  if (jogador->numCartas < 5) { // Se jogador ainda pode pegar cartas
+  if (jogador->numCartas < 5) {
     jogador->mao[jogador->numCartas] = baralho->cartas[(*cartaAtual)++];
     jogador->numCartas++;
     jogador->pontuacao = calcularPontuacao(jogador);
@@ -140,25 +128,26 @@ void pegarNovaCarta(Baralho *baralho, Jogador *jogador, int *cartaAtual) {
     } else if (jogador->pontuacao > 21) {
       printf("%s foi eliminado com %d pontos!\n", jogador->nome,
              jogador->pontuacao);
-      jogador->pontuacao = -1; // Marca jogador como eliminado
+      // Se o jogador for eliminado, sua pontuação é definida como -1 para
+      // identificação posterior
+      jogador->pontuacao = -1;
     }
   }
 }
 
-// Função de comparação para ordenar jogadores por pontuação
 int compararPontuacao(const void *a, const void *b) {
   Jogador *jogadorA = (Jogador *)a;
   Jogador *jogadorB = (Jogador *)b;
 
   if (jogadorA->pontuacao == -1)
-    return 1; // Jogador A está eliminado
+    return 1;
   if (jogadorB->pontuacao == -1)
-    return -1; // Jogador B está eliminado
+    return -1;
 
   int diferencaA = 21 - jogadorA->pontuacao;
   int diferencaB = 21 - jogadorB->pontuacao;
 
-  return diferencaA - diferencaB; // Ordena pela menor diferença de 21
+  return diferencaA - diferencaB;
 }
 
 int main() {
@@ -167,20 +156,21 @@ int main() {
   Jogador jogador[13]; // Inclui espaço para a CPU
   int cartaAtual = 0;
 
-  printf("Digite aqui a quantidade de jogadores -> ");
+  printf("Digite o número de jogadores (máximo 12): ");
   scanf("%d", &qtdjogador);
   limpaBuffer();
 
   // Nome dos jogadores humanos
   for (int i = 0; i < qtdjogador; i++) {
-    printf("Digite o nome do jogador %d -> ", i + 1);
+    printf("Digite o nome do jogador %d: ", i + 1);
     fgets(jogador[i].nome, 20, stdin);
-    jogador[i].nome[strcspn(jogador[i].nome, "\n")] = '\0'; // Remove newline
+    jogador[i].nome[strcspn(jogador[i].nome, "\n")] =
+        '\0'; // Remove a quebra de linha
   }
 
   // Nome da CPU
   strcpy(jogador[qtdjogador].nome, "CPU");
-  qtdjogador++; // Incluir a CPU na contagem de jogadores
+  qtdjogador++; // Inclui a CPU na contagem de jogadores
 
   inicializarBaralho(&baralho);
   embaralharBaralho(&baralho);
@@ -193,6 +183,7 @@ int main() {
     do {
       printf("%s, você deseja pegar uma nova carta? (s/n): ", jogador[i].nome);
       scanf(" %c", &opcao);
+      limpaBuffer(); // Limpa o buffer após a leitura do caractere
       if (opcao == 's' || opcao == 'S') {
         pegarNovaCarta(&baralho, &jogador[i], &cartaAtual);
         if (jogador[i].pontuacao != -1) {
@@ -203,9 +194,7 @@ int main() {
           }
         }
       }
-    } while ((opcao == 's' || opcao == 'S') &&
-             jogador[i].pontuacao !=
-                 -1); // Enquanto jogador quer nova carta e não foi eliminado
+    } while ((opcao == 's' || opcao == 'S') && jogador[i].pontuacao != -1);
   }
 
   // Lógica para CPU pegar novas cartas
@@ -218,7 +207,7 @@ int main() {
   // Ordenar jogadores pela pontuação
   qsort(jogador, qtdjogador, sizeof(Jogador), compararPontuacao);
 
-  // Exibir resultados finais
+  // Exibir resultados
   printf("Resultado final:\n");
   for (int i = 0; i < qtdjogador; i++) {
     if (jogador[i].pontuacao == -1) {
@@ -247,6 +236,7 @@ int main() {
       }
     } else { // Não há empate
       if (strcmp(jogador[0].nome, "CPU") == 0 && jogador[1].pontuacao != -1) {
+        // CPU não deve vencer se há um humano não eliminado com pontuação menor
         printf("O vencedor é %s com pontuação %d!\n", jogador[1].nome,
                jogador[1].pontuacao);
       } else if (strcmp(jogador[1].nome, "CPU") == 0 &&
