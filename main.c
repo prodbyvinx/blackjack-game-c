@@ -138,11 +138,13 @@ int compararPontuacao(const void *a, const void *b) {
     Jogador *jogadorA = (Jogador *)a;
     Jogador *jogadorB = (Jogador *)b;
 
+    // Jogadores eliminados têm pontuação -1
     if (jogadorA->pontuacao == -1)
-        return 1;
+        return 1; // Jogador A eliminado, Jogador B não eliminado
     if (jogadorB->pontuacao == -1)
-        return -1;
+        return -1; // Jogador B eliminado, Jogador A não eliminado
 
+    // Ordena pelo valor mais próximo de 21
     int diferencaA = 21 - jogadorA->pontuacao;
     int diferencaB = 21 - jogadorB->pontuacao;
 
@@ -160,7 +162,7 @@ int main() {
     limpaBuffer();
 
     // Nome dos jogadores humanos
-    for (int i = 0; i < qtdjogador; i++) {
+    for (int i = 0; i < qtdjogador - 1; i++) { // -1 para excluir a CPU da contagem
         printf("Digite o nome do jogador %d -> ", i + 1);
         fgets(jogador[i].nome, 20, stdin);
         // Remover o newline do final do nome do jogador
@@ -168,8 +170,7 @@ int main() {
     }
 
     // Nome da CPU
-    strcpy(jogador[qtdjogador].nome, "CPU");
-    qtdjogador++; // Incluir a CPU na contagem de jogadores
+    strcpy(jogador[qtdjogador - 1].nome, "CPU");
 
     inicializarBaralho(&baralho);
     embaralharBaralho(&baralho);
@@ -251,4 +252,4 @@ int main() {
     getchar(); // Espera o usuário pressionar qualquer tecla
 
     return 0;
-    }
+}
