@@ -1,23 +1,14 @@
-#include <Windows.h>
-#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <locale.h>
 
 // Limpa o buffer do teclado
 void limpaBuffer() {
   int ch;
   while ((ch = fgetc(stdin)) != EOF && ch != '\n') {
   }
-}
-
-// Função para posicionar o cursor na tela (Windows)
-void gotoxy(int x, int y) {
-  COORD coord;
-  coord.X = x;
-  coord.Y = y;
-  SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
 typedef enum { PAUS, OUROS, COPAS, ESPADAS } Naipe;
@@ -75,54 +66,66 @@ void embaralharBaralho(Baralho *baralho) {
   }
 }
 
-void imprimirCartaASCII(Carta carta, int x, int y) {
-  const char *valores[] = {"",  "A", "2", "3",  "4", "5", "6",
-                           "7", "8", "9", "10", "J", "Q", "K"};
+void imprimirCartaASCII(Carta carta) {
+  const char *valores[] = {"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
   const char *naipes[] = {"♣", "♦", "♥", "♠"};
 
-  gotoxy(x, y);
   printf("┌─────────┐\n");
-  gotoxy(x, y + 1);
   if (carta.valor == DEZ) {
     printf("│%s       │\n", valores[carta.valor]);
   } else {
     printf("│%s        │\n", valores[carta.valor]);
   }
-  gotoxy(x, y + 2);
   printf("│         │\n");
-  gotoxy(x, y + 3);
   printf("│         │\n");
-  gotoxy(x, y + 4);
   printf("│    %s    │\n", naipes[carta.naipe]);
-  gotoxy(x, y + 5);
   printf("│         │\n");
-  gotoxy(x, y + 6);
   printf("│         │\n");
-  gotoxy(x, y + 7);
   if (carta.valor == DEZ) {
     printf("│       %s│\n", valores[carta.valor]);
   } else {
     printf("│        %s│\n", valores[carta.valor]);
   }
-  gotoxy(x, y + 8);
   printf("└─────────┘\n");
 }
 
-void imprimirMaos(Jogador jogador[], int qtdjogador) {
-  int startX = 0;
-  int startY = 0;
+void imprimirBaralho(Baralho baralho) {
+  for (int i = 0; i < 52; i++) {
+    imprimirCartaASCII(baralho.cartas[i]);
+  }
+}
 
+int calcularPontuacao(Jogador *jogador) {
+  int soma = 0;
+  for (int i = 0; i < jogador->numCartas; i++) {
+    if (jogador->mao[i].valor >= VALETE && jogador->mao[i].valor <= REI) {
+      soma += 10;
+    } else {
+      soma += jogador->mao[i].valor;
+    }
+  }
+  return soma;
+}
+
+void distribuirCartas(Baralho *baralho, Jogador jogador[], int qtdjogador,
+                      int *cartaAtual) {
   for (int i = 0; i < qtdjogador; i++) {
-    gotoxy(startX, startY);
+    for (int j = 0; j < 2; j++) {
+      jogador[i].mao[j] = baralho->cartas[(*cartaAtual)++];
+    }
+    jogador[i].numCartas = 2;
+    jogador[i].pontuacao = calcularPontuacao(&jogador[i]);
+  }
+}
+
+void imprimirMaos(Jogador jogador[], int qtdjogador) {
+  for (int i = 0; i < qtdjogador; i++) {
     printf("Mão do jogador %s (Pontuação: %d):\n", jogador[i].nome,
            jogador[i].pontuacao);
-    startY += 2;
-
     for (int j = 0; j < jogador[i].numCartas; j++) {
-      imprimirCartaASCII(jogador[i].mao[j], startX, startY);
-      startY += 10;
+      imprimirCartaASCII(jogador[i].mao[j]);
     }
-    startY += 2; // Espaço entre jogadores
+    printf("\n");
   }
 }
 
@@ -196,8 +199,7 @@ int main() {
     char opcao;
     do {
       if (jogador[i].pontuacao != -1) {
-        printf("%s, você deseja pegar uma nova carta? (s/n): ",
-               jogador[i].nome);
+        printf("%s, você deseja pegar uma nova carta? (s/n): ", jogador[i].nome);
         scanf(" %c", &opcao);
       }
       if (opcao == 's' || opcao == 'S') {
@@ -205,68 +207,60 @@ int main() {
         if (jogador[i].pontuacao != -1) {
           printf("Nova mão de %s (Pontuação: %d):\n", jogador[i].nome,
                  jogador[i].pontuacao);
-          for (int j = 0; j < jogador[i].numCartas; j++) {
-            imprimirCartaASCII(jogador[i].mao[j], 0,
-                               0); // Posição inicial, será ajustada pelo gotoxy
-          }
-        }
-      }
-    } while ((opcao == 's' || opcao == 'S') && jogador[i].pontuacao != -1);
-  }
-}
+                      for (int j = 0; j < jogador[i].numCartas; j++) {
+                        imprimirCartaASCII(jogador[i].mao[j]);
+                      }
+                    }
+                  }
+                } while ((opcao == 's' || opcao == 'S') && jogador[i].pontuacao != -1);
+              }
 
-// Lógica para CPU pegar novas cartas
-while (qtdjogador > 1 && jogador[qtdjogador - 1].pontuacao < 17 &&
-       jogador[qtdjogador - 1].pontuacao != -1) {
-  pegarNovaCarta(&baralho, &jogador[qtdjogador - 1], &cartaAtual);
-}
+              // Lógica para CPU pegar novas cartas
+              while (qtdjogador > 1 && jogador[qtdjogador - 1].pontuacao < 17 && jogador[qtdjogador - 1].pontuacao != -1) {
+                pegarNovaCarta(&baralho, &jogador[qtdjogador - 1], &cartaAtual);
+              }
 
-// Limpa a tela antes de imprimir a mão final
-system("cls");
+              imprimirMaos(jogador, qtdjogador);
 
-imprimirMaos(jogador, qtdjogador);
+              // Ordenar jogadores pela pontuação
+              qsort(jogador, qtdjogador, sizeof(Jogador), compararPontuacao);
 
-// Ordenar jogadores pela pontuação
-qsort(jogador, qtdjogador, sizeof(Jogador), compararPontuacao);
+              // Exibir resultados
+              printf("Resultado final:\n");
+              for (int i = 0; i < qtdjogador; i++) {
+                if (jogador[i].pontuacao == -1) {
+                  printf("%s foi eliminado!\n", jogador[i].nome);
+                } else {
+                  printf("%d. %s (Pontuação: %d)\n", i + 1, jogador[i].nome,
+                         jogador[i].pontuacao);
+                  for (int j = 0; j < jogador[i].numCartas; j++) {
+                    imprimirCartaASCII(jogador[i].mao[j]);
+                  }
+                }
+                printf("\n");
+              }
 
-// Exibir resultados
-printf("Resultado final:\n");
-for (int i = 0; i < qtdjogador; i++) {
-  if (jogador[i].pontuacao == -1) {
-    printf("%s foi eliminado!\n", jogador[i].nome);
-  } else {
-    printf("%d. %s (Pontuação: %d)\n", i + 1, jogador[i].nome,
-           jogador[i].pontuacao);
-    for (int j = 0; j < jogador[i].numCartas; j++) {
-      imprimirCartaASCII(jogador[i].mao[j], 0,
-                         0); // Posição inicial, será ajustada pelo gotoxy
-    }
-  }
-  printf("\n");
-}
+              // Determinar o vencedor ou empate
+              int maxPontuacao = jogador[0].pontuacao;
+              int countEmpate = 0;
+              for (int i = 1; i < qtdjogador; i++) {
+                if (jogador[i].pontuacao == maxPontuacao) {
+                  countEmpate++;
+                }
+              }
 
-// Determinar o vencedor ou empate
-int maxPontuacao = jogador[0].pontuacao;
-int countEmpate = 0;
-for (int i = 1; i < qtdjogador; i++) {
-  if (jogador[i].pontuacao == maxPontuacao) {
-    countEmpate++;
-  }
-}
+              if (countEmpate > 0) {
+                printf("O jogo terminou em empate entre %d jogadores com pontuação %d!\n", countEmpate + 1, maxPontuacao);
+              } else if (strcmp(jogador[0].nome, "CPU") != 0 && jogador[0].pontuacao != -1) {
+                printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
+                       jogador[0].pontuacao);
+              } else if (jogador[0].pontuacao != -1) {
+                printf("A CPU venceu o jogo com pontuação %d!\n", jogador[0].pontuacao);
+              } else {
+                printf("Todos os jogadores humanos foram eliminados. A CPU venceu o jogo!\n");
+              }
 
-if (countEmpate > 0) {
-  printf("O jogo terminou em empate entre %d jogadores com pontuação %d!\n",
-         countEmpate + 1, maxPontuacao);
-} else if (strcmp(jogador[0].nome, "CPU") != 0 && jogador[0].pontuacao != -1) {
-  printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
-         jogador[0].pontuacao);
-} else if (jogador[0].pontuacao != -1) {
-  printf("A CPU venceu o jogo com pontuação %d!\n", jogador[0].pontuacao);
-} else {
-  printf("Todos os jogadores humanos foram eliminados. A CPU venceu o jogo!\n");
-}
-
-printf("Aperte qualquer tecla para fechar...");
-getchar();
-return 0;
-}
+              printf("Aperte qualquer tecla para fechar...");
+              getchar();
+              return 0;
+            }
