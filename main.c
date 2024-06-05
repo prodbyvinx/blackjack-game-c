@@ -160,7 +160,7 @@ int main() {
   setlocale(LC_ALL, "Portuguese");
   Baralho baralho;
   int qtdjogador = 0;
-  Jogador jogador[13]; // Inclui espaço para a CPU
+  Jogador jogador[12]; // Inclui espaço para a CPU
   int cartaAtual = 0;
 
   printf("Digite aqui a quantidade de jogadores -> ");
