@@ -2,6 +2,8 @@
 
 Este repositório contém um jogo de blackjack implementado em C. O jogo permite até 12 jogadores, sendo um deles a CPU e os demais jogadores humanos. O objetivo é se aproximar de 21 pontos sem ultrapassá-los. Os jogadores podem pedir novas cartas para aumentar sua pontuação. O jogo termina quando todos os jogadores humanos são eliminados ou quando um jogador ou a CPU atingem exatamente 21 pontos.
 
+![Blackjack](https://j.gifs.com/KR1AoP.gif)
+
 ## Funcionalidades
 
 - Jogo de blackjack simples para até 12 jogadores.
