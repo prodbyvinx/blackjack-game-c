@@ -1,8 +1,8 @@
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <locale.h>
 
 // Limpa o buffer do teclado
 void limpaBuffer() {
@@ -67,7 +67,8 @@ void embaralharBaralho(Baralho *baralho) {
 }
 
 void imprimirCartaASCII(Carta carta) {
-  const char *valores[] = {"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+  const char *valores[] = {"",  "A", "2", "3",  "4", "5", "6",
+                           "7", "8", "9", "10", "J", "Q", "K"};
   const char *naipes[] = {"♣", "♦", "♥", "♠"};
 
   printf("┌─────────┐\n");
@@ -199,7 +200,8 @@ int main() {
     char opcao;
     do {
       if (jogador[i].pontuacao != -1) {
-        printf("%s, você deseja pegar uma nova carta? (s/n): ", jogador[i].nome);
+        printf("%s, você deseja pegar uma nova carta? (s/n): ",
+               jogador[i].nome);
         scanf(" %c", &opcao);
         limpaBuffer();
       }
@@ -208,60 +210,65 @@ int main() {
         if (jogador[i].pontuacao != -1) {
           printf("Nova mão de %s (Pontuação: %d):\n", jogador[i].nome,
                  jogador[i].pontuacao);
-                      for (int j = 0; j < jogador[i].numCartas; j++) {
-                        imprimirCartaASCII(jogador[i].mao[j]);
-                      }
-                    }
-                  }
-                } while ((opcao == 's' || opcao == 'S') && jogador[i].pontuacao != -1);
-              }
+          for (int j = 0; j < jogador[i].numCartas; j++) {
+            imprimirCartaASCII(jogador[i].mao[j]);
+          }
+        }
+      }
+    } while ((opcao == 's' || opcao == 'S') && jogador[i].pontuacao != -1);
+  }
 
-              // Lógica para CPU pegar novas cartas
-              while (qtdjogador > 1 && jogador[qtdjogador - 1].pontuacao < 17 && jogador[qtdjogador - 1].pontuacao != -1) {
-                pegarNovaCarta(&baralho, &jogador[qtdjogador - 1], &cartaAtual);
-              }
+  // Lógica para CPU pegar novas cartas
+  while (qtdjogador > 1 && jogador[qtdjogador - 1].pontuacao < 17 &&
+         jogador[qtdjogador - 1].pontuacao != -1) {
+    pegarNovaCarta(&baralho, &jogador[qtdjogador - 1], &cartaAtual);
+  }
 
-              imprimirMaos(jogador, qtdjogador);
+  imprimirMaos(jogador, qtdjogador);
 
-              // Ordenar jogadores pela pontuação
-              qsort(jogador, qtdjogador, sizeof(Jogador), compararPontuacao);
+  // Ordenar jogadores pela pontuação
+  qsort(jogador, qtdjogador, sizeof(Jogador), compararPontuacao);
 
-              // Exibir resultados
-              printf("Resultado final:\n");
-              for (int i = 0; i < qtdjogador; i++) {
-                if (jogador[i].pontuacao == -1) {
-                  printf("%s foi eliminado!\n", jogador[i].nome);
-                } else {
-                  printf("%d. %s (Pontuação: %d)\n", i + 1, jogador[i].nome,
-                         jogador[i].pontuacao);
-                  for (int j = 0; j < jogador[i].numCartas; j++) {
-                    imprimirCartaASCII(jogador[i].mao[j]);
-                  }
-                }
-                printf("\n");
-              }
+  // Exibir resultados
+  printf("Resultado final:\n");
+  for (int i = 0; i < qtdjogador; i++) {
+    if (jogador[i].pontuacao == -1) {
+      printf("%s foi eliminado!\n", jogador[i].nome);
+    } else {
+      printf("%d. %s (Pontuação: %d)\n", i + 1, jogador[i].nome,
+             jogador[i].pontuacao);
+      for (int j = 0; j < jogador[i].numCartas; j++) {
+        imprimirCartaASCII(jogador[i].mao[j]);
+      }
+    }
+    printf("\n");
+  }
 
-              // Determinar o vencedor ou empate
-              int maxPontuacao = jogador[0].pontuacao;
-              int countEmpate = 0;
-              for (int i = 1; i < qtdjogador; i++) {
-                if (jogador[i].pontuacao == maxPontuacao) {
-                  countEmpate++;
-                }
-              }
+  // Determinar o vencedor ou empate
+  int maxPontuacao = jogador[0].pontuacao;
+  int countEmpate = 0;
+  for (int i = 1; i < qtdjogador; i++) {
+    if (jogador[i].pontuacao == maxPontuacao) {
+      countEmpate++;
+    }
+  }
 
-              if (countEmpate > 0) {
-                printf("O jogo terminou em empate entre %d jogadores com pontuação %d!\n", countEmpate + 1, maxPontuacao);
-              } else if (strcmp(jogador[0].nome, "CPU") != 0 && jogador[0].pontuacao != -1) {
-                printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
-                       jogador[0].pontuacao);
-              } else if (jogador[0].pontuacao != -1) {
-                printf("A CPU venceu o jogo com pontuação %d!\n", jogador[0].pontuacao);
-              } else {
-                printf("Todos os jogadores humanos foram eliminados. A CPU venceu o jogo!\n");
-              }
+  if (countEmpate > 0) {
+    printf("O jogo terminou em empate entre %d jogadores com pontuação %d!\n",
+           countEmpate + 1, maxPontuacao);
+  } else if (strcmp(jogador[0].nome, "CPU") != 0 &&
+             jogador[0].pontuacao != -1) {
+    printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
+           jogador[0].pontuacao);
+  } else if (jogador[0].pontuacao != -1) {
+    printf("A CPU venceu o jogo com pontuação %d!\n", jogador[0].pontuacao);
+  } else {
+    printf(
+        "Todos os jogadores humanos foram eliminados. A CPU venceu o jogo!\n");
+  }
 
-              printf("Aperte qualquer tecla para fechar...");
-              getchar();
-              return 0;
-            }
+  printf("Aperte qualquer tecla para fechar...");
+
+  limpaBuffer();
+  return 0;
+}
