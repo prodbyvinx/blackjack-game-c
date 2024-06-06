@@ -22,3 +22,8 @@ Compile o jogo com um compilador C. Por exemplo:
 
 ```bash
 gcc -o blackjack main.c
+```
+
+Execute o jogo via terminal com o comando:
+```bash
+./blackjack.exe
