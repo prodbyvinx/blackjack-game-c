@@ -29,3 +29,6 @@ gcc -o blackjack main.c
 Execute o jogo via terminal com o comando:
 ```bash
 ./blackjack.exe
+```
+
+Créditos: VINÍCIUS HENRIQUE BEIRA, FELIPE MORAES TOLEDO, JONATHAS VAZ EULALIO DE SOUZA, KAIAN MUNIZ DE SOUZA, LUIZ FABIANO OLIVEIRA DE SOUZA.
