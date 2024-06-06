@@ -247,17 +247,22 @@ int main() {
   // Determinar o vencedor ou empate
   int maxPontuacao = jogador[0].pontuacao;
   int countEmpate = 0;
+  int countEmpateCPU = 0;
   for (int i = 1; i < qtdjogador; i++) {
     if (jogador[i].pontuacao == maxPontuacao) {
       countEmpate++;
     }
+    if (jogador[i].pontuacao == maxPontuacao &&
+        strcmp(jogador[i].nome, "CPU") == 0) {
+      countEmpateCPU++;
+    }
   }
 
-  if (countEmpate > 0) {
+  if (countEmpate > 0 && countEmpateCPU == 0) {
     printf("O jogo terminou em empate entre %d jogadores com pontuação %d!\n",
            countEmpate + 1, maxPontuacao);
   } else if (strcmp(jogador[0].nome, "CPU") != 0 &&
-             jogador[0].pontuacao != -1) {
+             jogador[0].pontuacao != -1 && countEmpateCPU == 0) {
     printf("O vencedor é %s com pontuação %d!\n", jogador[0].nome,
            jogador[0].pontuacao);
   } else if (jogador[0].pontuacao != -1) {
@@ -270,5 +275,5 @@ int main() {
   printf("Aperte qualquer tecla para fechar...");
 
   limpaBuffer();
-  return 0;
+  return 0;
 }
