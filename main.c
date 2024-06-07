@@ -69,25 +69,24 @@ void embaralharBaralho(Baralho *baralho) {
 void imprimirCartaASCII(Carta carta) {
   const char *valores[] = {"",  "A", "2", "3",  "4", "5", "6",
                            "7", "8", "9", "10", "J", "Q", "K"};
-  const char *naipes[] = {"♣", "♦", "♥", "♠"};
-
-  printf("┌─────────┐\n");
+  const char *naipes[] = {"C", "D", "H", "S"}; // ♣ ♦ ♥ ♠
+  printf("+----------+\n");
   if (carta.valor == DEZ) {
-    printf("│%s       │\n", valores[carta.valor]);
+    printf("|%s        |\n", valores[carta.valor]);
   } else {
-    printf("│%s        │\n", valores[carta.valor]);
+    printf("|%s         |\n", valores[carta.valor]);
   }
-  printf("│         │\n");
-  printf("│         │\n");
-  printf("│    %s    │\n", naipes[carta.naipe]);
-  printf("│         │\n");
-  printf("│         │\n");
+  printf("|          |\n");
+  printf("|          |\n");
+  printf("|    %s     |\n", naipes[carta.naipe]);
+  printf("|          |\n");
+  printf("|          |\n");
   if (carta.valor == DEZ) {
-    printf("│       %s│\n", valores[carta.valor]);
+    printf("|        %s|\n", valores[carta.valor]);
   } else {
-    printf("│        %s│\n", valores[carta.valor]);
+    printf("|         %s|\n", valores[carta.valor]);
   }
-  printf("└─────────┘\n");
+  printf("+----------+\n");
 }
 
 void imprimirBaralho(Baralho baralho) {
@@ -275,5 +274,5 @@ int main() {
   printf("Aperte qualquer tecla para fechar...");
 
   limpaBuffer();
-  return 0;
+  return 0;
 }
