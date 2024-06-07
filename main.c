@@ -47,9 +47,8 @@ typedef struct {
 
 void inicializarBaralho(Baralho *baralho) {
   int index = 0;
-  int n, v;
-  for (n = PAUS; n <= ESPADAS; n++) {
-    for (v = AS; v <= REI; v++) {
+  for (int n = PAUS; n <= ESPADAS; n++) {
+    for (int v = AS; v <= REI; v++) {
       baralho->cartas[index].naipe = (Naipe)n;
       baralho->cartas[index].valor = (Valor)v;
       index++;
@@ -59,9 +58,8 @@ void inicializarBaralho(Baralho *baralho) {
 
 void embaralharBaralho(Baralho *baralho) {
   srand(time(NULL));
-  int i, j;
-  for (i = 51; i > 0; i--) {
-    j = rand() % (i + 1);
+  for (int i = 51; i > 0; i--) {
+    int j = rand() % (i + 1);
     Carta temp = baralho->cartas[i];
     baralho->cartas[i] = baralho->cartas[j];
     baralho->cartas[j] = temp;
@@ -71,40 +69,35 @@ void embaralharBaralho(Baralho *baralho) {
 void imprimirCartaASCII(Carta carta) {
   const char *valores[] = {"",  "A", "2", "3",  "4", "5", "6",
                            "7", "8", "9", "10", "J", "Q", "K"};
-  const char *naipes[] = {"P", "O", "C", "E"};
-  const char linha = 196;  
-  const char borda = 179;  
-
-  printf("%c%c%c%c%c%c%c%c%c%c%c\n", 218, linha, linha, linha, linha, linha, linha, linha, linha, linha, 191);
-  if (carta.valor == 10) {
-    printf("%c%s       %c\n", borda, valores[carta.valor], borda);
+  const char *naipes[] = {"P", "C", "O", "E"};
+  printf("+----------+\n");
+  if (carta.valor == DEZ) {
+    printf("|%s        |\n", valores[carta.valor]);
   } else {
-    printf("%c%s        %c\n", borda, valores[carta.valor], borda);
+    printf("|%s         |\n", valores[carta.valor]);
   }
-  printf("%c         %c\n", borda, borda);
-  printf("%c         %c\n", borda, borda);
-  printf("%c    %s    %c\n", borda, naipes[carta.naipe], borda);
-  printf("%c         %c\n", borda, borda);
-  printf("%c         %c\n", borda, borda);
-  if (carta.valor == 10) {
-    printf("%c       %s%c\n", borda, valores[carta.valor], borda);
+  printf("|          |\n");
+  printf("|          |\n");
+  printf("|    %s     |\n", naipes[carta.naipe]);
+  printf("|          |\n");
+  printf("|          |\n");
+  if (carta.valor == DEZ) {
+    printf("|        %s|\n", valores[carta.valor]);
   } else {
-    printf("%c        %s%c\n", borda, valores[carta.valor], borda);
+    printf("|         %s|\n", valores[carta.valor]);
   }
-  printf("%c%c%c%c%c%c%c%c%c%c%c\n", 192, linha, linha, linha, linha, linha, linha, linha, linha, linha, 217);
+  printf("+----------+\n");
 }
 
 void imprimirBaralho(Baralho baralho) {
-  int i;
-  for (i = 0; i < 52; i++) {
+  for (int i = 0; i < 52; i++) {
     imprimirCartaASCII(baralho.cartas[i]);
   }
 }
 
 int calcularPontuacao(Jogador *jogador) {
   int soma = 0;
-  int i;
-  for (i = 0; i < jogador->numCartas; i++) {
+  for (int i = 0; i < jogador->numCartas; i++) {
     if (jogador->mao[i].valor >= VALETE && jogador->mao[i].valor <= REI) {
       soma += 10;
     } else {
@@ -116,9 +109,8 @@ int calcularPontuacao(Jogador *jogador) {
 
 void distribuirCartas(Baralho *baralho, Jogador jogador[], int qtdjogador,
                       int *cartaAtual) {
-  int i, j;
-  for (i = 0; i < qtdjogador; i++) {
-    for (j = 0; j < 2; j++) {
+  for (int i = 0; i < qtdjogador; i++) {
+    for (int j = 0; j < 2; j++) {
       jogador[i].mao[j] = baralho->cartas[(*cartaAtual)++];
     }
     jogador[i].numCartas = 2;
@@ -127,13 +119,10 @@ void distribuirCartas(Baralho *baralho, Jogador jogador[], int qtdjogador,
 }
 
 void imprimirMaos(Jogador jogador[], int qtdjogador) {
-  int i, j;
-  for (i = 0; i < qtdjogador; i++) {
-    setlocale(LC_ALL, "Portuguese");
+  for (int i = 0; i < qtdjogador; i++) {
     printf("Mão do jogador %s (Pontuação: %d):\n", jogador[i].nome,
            jogador[i].pontuacao);
-    for (j = 0; j < jogador[i].numCartas; j++) {
-      setlocale(LC_ALL, "C");
+    for (int j = 0; j < jogador[i].numCartas; j++) {
       imprimirCartaASCII(jogador[i].mao[j]);
     }
     printf("\n");
@@ -173,16 +162,14 @@ int main() {
   int qtdjogador = 0;
   Jogador jogador[13]; // Inclui espaço para a CPU
   int cartaAtual = 0;
-  int i, j;
 
   printf("Digite aqui a quantidade de jogadores -> ");
   scanf("%d", &qtdjogador);
   limpaBuffer();
 
   // Nome dos jogadores humanos
-  for (i = 0; i < qtdjogador; i++) {
+  for (int i = 0; i < qtdjogador; i++) {
     printf("Digite o nome do jogador %d -> ", i + 1);
-    setlocale(LC_ALL, "Portuguese");
     fgets(jogador[i].nome, 20, stdin);
     // Remover o newline do final do nome do jogador
     jogador[i].nome[strcspn(jogador[i].nome, "\n")] = '\0';
@@ -197,20 +184,20 @@ int main() {
   distribuirCartas(&baralho, jogador, qtdjogador, &cartaAtual);
   imprimirMaos(jogador, qtdjogador);
 
-  for (i = 0; i < qtdjogador; i++) {
+  for (int i = 0; i < qtdjogador; i++) {
     if (jogador[i].pontuacao > 21) {
-      setlocale(LC_ALL, "Portuguese");
       printf("%s foi eliminado com %d pontos!\n", jogador[i].nome,
              jogador[i].pontuacao);
+      // Se o jogador for eliminado, sua pontuação é definida como -1 para
+      // identificação posterior
       jogador[i].pontuacao = -1;
     }
   }
 
   // Lógica para jogadores humanos pegarem novas cartas
-  for (i = 0; i < qtdjogador - 1; i++) { // Exceto CPU
+  for (int i = 0; i < qtdjogador - 1; i++) { // Exceto CPU
     char opcao;
     do {
-      setlocale(LC_ALL, "Portuguese");
       if (jogador[i].pontuacao != -1) {
         printf("%s, você deseja pegar uma nova carta? (s/n): ",
                jogador[i].nome);
@@ -218,14 +205,11 @@ int main() {
         limpaBuffer();
       }
       if (opcao == 's' || opcao == 'S') {
-      	 
         pegarNovaCarta(&baralho, &jogador[i], &cartaAtual);
         if (jogador[i].pontuacao != -1) {
-          setlocale(LC_ALL, "Portuguese");
           printf("Nova mão de %s (Pontuação: %d):\n", jogador[i].nome,
                  jogador[i].pontuacao);
-          for (j = 0; j < jogador[i].numCartas; j++) {
-          	setlocale(LC_ALL, "C");
+          for (int j = 0; j < jogador[i].numCartas; j++) {
             imprimirCartaASCII(jogador[i].mao[j]);
           }
         }
@@ -244,17 +228,15 @@ int main() {
   // Ordenar jogadores pela pontuação
   qsort(jogador, qtdjogador, sizeof(Jogador), compararPontuacao);
 
- // Exibir resultados
+  // Exibir resultados
   printf("Resultado final:\n");
-  setlocale(LC_ALL, "Portuguese");
-  for (i = 0; i < qtdjogador; i++) {
+  for (int i = 0; i < qtdjogador; i++) {
     if (jogador[i].pontuacao == -1) {
       printf("%s foi eliminado!\n", jogador[i].nome);
     } else {
       printf("%d. %s (Pontuação: %d)\n", i + 1, jogador[i].nome,
              jogador[i].pontuacao);
-      for (j = 0; j < jogador[i].numCartas; j++) {
-      	setlocale(LC_ALL, "C");
+      for (int j = 0; j < jogador[i].numCartas; j++) {
         imprimirCartaASCII(jogador[i].mao[j]);
       }
     }
@@ -265,7 +247,7 @@ int main() {
   int maxPontuacao = jogador[0].pontuacao;
   int countEmpate = 0;
   int countEmpateCPU = 0;
-  for (i = 1; i < qtdjogador; i++) {
+  for (int i = 1; i < qtdjogador; i++) {
     if (jogador[i].pontuacao == maxPontuacao) {
       countEmpate++;
     }
@@ -276,7 +258,6 @@ int main() {
   }
 
   if (countEmpate > 0 && countEmpateCPU == 0) {
-    setlocale(LC_ALL, "Portuguese");
     printf("O jogo terminou em empate entre %d jogadores com pontuação %d!\n",
            countEmpate + 1, maxPontuacao);
   } else if (strcmp(jogador[0].nome, "CPU") != 0 &&
@@ -286,10 +267,12 @@ int main() {
   } else if (jogador[0].pontuacao != -1) {
     printf("A CPU venceu o jogo com pontuação %d!\n", jogador[0].pontuacao);
   } else {
-    printf("Todos os jogadores humanos foram eliminados. A CPU venceu o jogo!\n");
+    printf(
+        "Todos os jogadores humanos foram eliminados. A CPU venceu o jogo!\n");
   }
 
   printf("Aperte qualquer tecla para fechar...");
+
   limpaBuffer();
   return 0;
 }
