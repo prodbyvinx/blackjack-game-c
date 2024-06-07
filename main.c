@@ -69,7 +69,7 @@ void embaralharBaralho(Baralho *baralho) {
 void imprimirCartaASCII(Carta carta) {
   const char *valores[] = {"",  "A", "2", "3",  "4", "5", "6",
                            "7", "8", "9", "10", "J", "Q", "K"};
-  const char *naipes[] = {"C", "D", "H", "S"}; // ♣ ♦ ♥ ♠
+  const char *naipes[] = {"P", "O", "C", "E"}; // ♣ ♦ ♥ ♠
   printf("+----------+\n");
   if (carta.valor == DEZ) {
     printf("|%s        |\n", valores[carta.valor]);
